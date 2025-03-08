@@ -308,3 +308,435 @@ Would you like to:
 
 Let me know how you'd like to proceed!
 
+Great! Let's move on to **AWS Security & IAM (Identity and Access Management)**, one of the most important topics in AWS.  
+
+---
+
+# **1. Understanding AWS Security & IAM**  
+### **What is IAM?**  
+AWS **Identity and Access Management (IAM)** is a service that controls access to AWS resources securely. It lets you:  
+✅ Create **Users** (individual accounts)  
+✅ Create **Groups** (collection of users)  
+✅ Assign **Roles** (temporary permissions for AWS services)  
+✅ Apply **Policies** (rules that define permissions)  
+
+### **Why is IAM Important?**  
+1. **Security Best Practices** – Helps enforce **least privilege** access.  
+2. **Multi-User Access** – Allows teams to securely access AWS resources.  
+3. **Integration with AWS Services** – Controls access to S3, EC2, RDS, and more.  
+4. **Temporary Access** – IAM Roles grant temporary credentials instead of using root credentials.  
+
+---
+
+# **2. Hands-on: IAM User, Group, and Role Creation**
+Let’s create an **IAM user with limited permissions**, assign it to a **group**, and create a **role** for EC2.
+
+---
+
+## **Step 1: Create an IAM User**
+1. **Go to AWS Console → IAM**.  
+2. Click **Users → Add User**.  
+3. **Set user details**:  
+   - Enter **User Name** (e.g., `test-user`).  
+   - Select **Access Type** → Check **AWS Management Console Access**.  
+   - Set a **custom password** (or auto-generate).  
+   - Uncheck **Require password reset** (for now).  
+4. Click **Next → Permissions**.  
+
+---
+
+## **Step 2: Create an IAM Group and Assign Permissions**  
+1. Click **Create Group**.  
+2. Enter **Group Name** (e.g., `Developers`).  
+3. **Attach Policies**:  
+   - Select **AdministratorAccess** (or choose specific permissions like S3FullAccess, EC2ReadOnly).  
+4. Click **Create Group** → Select the group → Click **Next**.  
+5. Click **Create User**.  
+
+✅ Now, `test-user` can log in with limited permissions instead of using the root account.  
+
+---
+
+## **Step 3: Create an IAM Role for EC2**
+IAM **Roles** allow AWS services to access other AWS services securely.
+
+1. **Go to IAM → Roles → Create Role**.  
+2. **Select Trusted Entity**: Choose **AWS service** → **EC2**.  
+3. Click **Next → Permissions** and attach **AmazonS3FullAccess**.  
+4. Click **Next → Name the Role** (e.g., `EC2-S3-Access`).  
+5. Click **Create Role**.  
+
+✅ Now, any EC2 instance assigned to this role can access **S3** without needing access keys.  
+
+---
+
+# **3. Test IAM User Login**
+1. Go to **IAM Dashboard** → Click **"Copy AWS Sign-in URL"**.  
+2. Open it in **Incognito Mode** and log in with `test-user`.  
+3. Check which AWS services `test-user` can access.  
+
+---
+
+# **4. IAM Security Best Practices**
+✔ **Disable Root User Access Keys** – Always use IAM users instead.  
+✔ **Enable Multi-Factor Authentication (MFA)** for extra security.  
+✔ **Use IAM Roles for AWS Services** instead of hardcoding credentials.  
+✔ **Apply Least Privilege** – Grant only the necessary permissions.  
+✔ **Monitor IAM Activity** with AWS CloudTrail.  
+
+---
+
+# **Next Steps**
+Would you like to:  
+✅ **Explore AWS CloudTrail for monitoring IAM activities?**  
+✅ **Move to the next AWS topic: AWS Storage (S3, EBS, EFS)?**  
+✅ **Try another hands-on IAM scenario?**  
+
+Let me know how you'd like to proceed!
+
+Great! Let's explore **AWS CloudTrail** for monitoring IAM activities before moving on to AWS Storage (S3, EBS, EFS).  
+
+---
+
+# **1. What is AWS CloudTrail?**  
+AWS **CloudTrail** is a service that records all actions taken in your AWS account. It helps with:  
+✔ **Security Auditing** – Tracks who did what in your AWS account.  
+✔ **Compliance** – Helps meet security regulations.  
+✔ **Troubleshooting** – Identifies unauthorized access or misconfigurations.  
+
+---
+
+# **2. Hands-on: Enable CloudTrail and View IAM Activity**  
+
+## **Step 1: Enable CloudTrail**  
+1. **Go to AWS Console → CloudTrail**.  
+2. Click **Create Trail**.  
+3. **Set Trail Name** (e.g., `MyCloudTrail`).  
+4. **Choose "Management Events"**:  
+   - **Read/Write Events:** Select **All (Read & Write Events)**.  
+5. **Storage Location**:  
+   - Create a new **S3 bucket** (e.g., `my-cloudtrail-logs`).  
+   - Enable **Log File Validation**.  
+6. Click **Create Trail**.  
+
+✅ **Now, CloudTrail is enabled, and logs will be stored in the S3 bucket.**  
+
+---
+
+## **Step 2: Perform an IAM Action (Trigger a Log Entry)**  
+1. **Go to IAM** and create/delete a test user.  
+2. Wait a few minutes for CloudTrail to record the event.  
+
+---
+
+## **Step 3: View IAM Activity Logs**  
+1. **Go to CloudTrail → Event History**.  
+2. Use the **Filter** to search for:  
+   - **Event Name:** `CreateUser`, `DeleteUser`, etc.  
+   - **User Name:** `test-user` (or another IAM user).  
+3. Click on an event to see **who performed the action**, **when**, and **from which IP address**.  
+
+---
+
+# **3. Bonus: Set Up an Alert for IAM Changes**  
+You can create a CloudWatch **alarm** to get notified of IAM changes.  
+
+1. **Go to CloudWatch → Logs**.  
+2. Choose the **CloudTrail Log Group**.  
+3. Create a **Metric Filter** for IAM actions.  
+4. Set up an **SNS notification** to get alerts via email.  
+
+✅ Now, you’ll receive alerts for IAM changes in real time!  
+
+---
+
+# **Next Steps**
+Would you like to:  
+✅ **Move to AWS Storage (S3, EBS, EFS)?**  
+✅ **Set up CloudWatch alarms for security monitoring?**  
+✅ **Try another hands-on security scenario?**  
+
+Let me know what you'd like to do next!
+
+Great! Let's move on to **AWS Storage** and explore **S3, EBS, and EFS** step by step.  
+
+---
+
+# **1. AWS Storage Overview**  
+AWS provides different storage services based on use cases:  
+✔ **Amazon S3** – Object storage for files, backups, and static websites.  
+✔ **Amazon EBS** – Block storage for EC2 instances (like a hard drive).  
+✔ **Amazon EFS** – Scalable file storage for multiple EC2 instances.  
+
+---
+
+# **2. Amazon S3 (Simple Storage Service)**
+S3 is an **object storage** service designed for **scalability, durability, and security**.
+
+## **Hands-on: Create an S3 Bucket & Upload Files**  
+
+### **Step 1: Create an S3 Bucket**  
+1. Go to **AWS Console → S3**.  
+2. Click **Create Bucket**.  
+3. **Enter Bucket Name** (e.g., `my-storage-bucket-123`).  
+4. Choose a **Region** (keep it close to your users).  
+5. **Uncheck "Block all public access"** (if you want public file access).  
+6. Click **Create Bucket**.  
+
+### **Step 2: Upload a File**  
+1. Open your bucket.  
+2. Click **Upload** → Choose a file (e.g., an image or document).  
+3. Click **Upload**.  
+
+### **Step 3: Make the File Public (Optional)**  
+1. Select the uploaded file → Click **Actions → Make public**.  
+2. Copy the **Object URL** → Open it in a browser to access your file.  
+
+✅ **Now, your file is stored in S3 and accessible online!**  
+
+---
+
+## **3. Amazon EBS (Elastic Block Store)**
+EBS is a **block storage** service for **EC2 instances**, like an HDD/SSD.
+
+### **Hands-on: Attach an EBS Volume to an EC2 Instance**  
+1. Go to **AWS Console → EC2 → Elastic Block Store (EBS) → Volumes**.  
+2. Click **Create Volume**.  
+   - Choose **Size (e.g., 10GB)**.  
+   - Select the **same Availability Zone** as your EC2 instance.  
+   - Click **Create Volume**.  
+3. **Attach the volume to an EC2 instance**:  
+   - Select the volume → Click **Actions → Attach Volume**.  
+   - Choose your **EC2 instance** → Click **Attach**.  
+
+### **Step 2: Format & Mount the EBS Volume**
+1. Connect to your EC2 instance via SSH.  
+2. Run these commands:  
+```bash
+# List available storage devices
+lsblk  
+
+# Format the new volume (replace 'xvdf' with your actual volume name)
+sudo mkfs -t ext4 /dev/xvdf  
+
+# Create a mount point
+sudo mkdir /mnt/ebs  
+
+# Mount the volume
+sudo mount /dev/xvdf /mnt/ebs  
+
+# Verify the storage is mounted
+df -h  
+```
+
+✅ **Now, your EC2 instance has extra storage!**  
+
+---
+
+## **4. Amazon EFS (Elastic File System)**
+EFS is a **shared file storage** that multiple EC2 instances can access.
+
+### **Hands-on: Create an EFS File System**
+1. Go to **AWS Console → EFS**.  
+2. Click **Create File System**.  
+3. Choose **VPC and Subnets** where your EC2 instances are located.  
+4. Click **Create**.  
+
+### **Step 2: Mount EFS to EC2**
+1. Open your EFS file system.  
+2. Click **Attach** and copy the **mount command**.  
+3. Connect to your EC2 instance via SSH and run:  
+```bash
+# Install NFS utilities
+sudo yum install -y amazon-efs-utils  
+
+# Create a mount point
+sudo mkdir /mnt/efs  
+
+# Mount EFS (replace file system ID)
+sudo mount -t efs fs-xxxxxxxx:/ /mnt/efs  
+
+# Verify the mount
+df -h  
+```
+
+✅ **Now, multiple EC2 instances can share this storage!**  
+
+---
+
+# **5. Comparison of S3, EBS, and EFS**
+| Feature  | Amazon S3 | Amazon EBS | Amazon EFS |
+|----------|----------|----------|----------|
+| Type | Object Storage | Block Storage | File Storage |
+| Use Case | File storage, backups, websites | EC2 instance storage | Shared storage for multiple EC2 instances |
+| Access | Global | Single EC2 instance | Multiple EC2 instances |
+| Performance | High scalability | High-speed SSD/HDD | Scalable file system |
+
+---
+
+# **Next Steps**
+Would you like to:  
+✅ **Explore S3 versioning, lifecycle policies, and storage classes?**  
+✅ **Try setting up an EC2-based web server that serves files from S3?**  
+✅ **Move to the next AWS topic: Networking (VPC, Route 53, CloudFront)?**  
+
+Let me know how you'd like to proceed!
+
+Let's dive deeper into **Amazon S3** and explore **versioning, lifecycle policies, and storage classes** before moving on to AWS networking.  
+
+---
+
+# **1. S3 Versioning**
+S3 **versioning** allows you to keep multiple versions of an object in the same bucket. This helps with:  
+✔ **Recovering accidental deletions**  
+✔ **Tracking changes to files over time**  
+
+### **Hands-on: Enable S3 Versioning**
+1. **Go to AWS Console → S3 → Your Bucket**.  
+2. Click **Properties** → Scroll down to **Bucket Versioning**.  
+3. Click **Edit** → Enable **Versioning** → Save.  
+
+### **Step 2: Upload Multiple Versions of a File**
+1. Upload a file (e.g., `report.pdf`).  
+2. Modify the file on your computer and upload it again with the same name.  
+3. Click the file in S3 → Check the **Versions** tab.  
+
+✅ Now, S3 stores all versions of the file, and you can restore old versions anytime!  
+
+---
+
+# **2. S3 Lifecycle Policies**
+S3 **lifecycle policies** help **automate cost management** by moving files to cheaper storage or deleting them after a certain time.
+
+### **Example: Automatically Move Files to Glacier After 30 Days**
+1. **Go to AWS Console → S3 → Your Bucket**.  
+2. Click **Management** → **Create Lifecycle Rule**.  
+3. Set **Rule Name** (e.g., `MoveToGlacier`).  
+4. Choose **"Apply to all objects"** or specify a folder (`prefix`).  
+5. Click **Lifecycle Rule Actions → Move to Glacier after 30 days**.  
+6. Click **Create Rule**.  
+
+✅ Now, files older than **30 days** will move to **Glacier**, saving costs!  
+
+---
+
+# **3. S3 Storage Classes**
+S3 offers different **storage classes** for cost optimization.  
+
+| Storage Class | Use Case | Cost | Availability |
+|--------------|----------|------|-------------|
+| **Standard** | Frequently accessed data | $$ | 99.99% |
+| **Intelligent-Tiering** | Auto moves data between Standard & Infrequent | $$ | 99.9% |
+| **Standard-IA (Infrequent Access)** | Backup & disaster recovery | $ | 99.9% |
+| **Glacier** | Long-term archival (retrieval time: minutes/hours) | ¢ | 99.99% |
+
+### **Hands-on: Move a File to a Different Storage Class**
+1. Select an object in **S3 Console**.  
+2. Click **Actions → Change Storage Class**.  
+3. Choose **Standard-IA** or **Glacier** → Save.  
+
+✅ Now, your file is in a cheaper storage class!  
+
+---
+
+# **Next Steps**
+Would you like to:  
+✅ **Try setting up a static website with S3?**  
+✅ **Move to AWS Networking (VPC, Route 53, CloudFront)?**  
+✅ **Learn about S3 security (Bucket Policies, IAM Permissions, Encryption)?**  
+
+Let me know how you'd like to proceed!
+
+Great! Let’s move to **AWS Networking**, covering **VPC (Virtual Private Cloud), Route 53, and CloudFront** step by step.  
+
+---
+
+# **1. Amazon VPC (Virtual Private Cloud)**
+A **VPC** is a logically isolated network within AWS where you launch your resources like **EC2, RDS, and Lambda**.  
+
+### **Key VPC Components**
+✔ **Subnets** – Divide your VPC into public & private networks.  
+✔ **Route Tables** – Control traffic routing.  
+✔ **Internet Gateway (IGW)** – Allows internet access.  
+✔ **NAT Gateway** – Allows private instances to access the internet securely.  
+
+---
+
+## **Hands-on: Create a Custom VPC**
+### **Step 1: Create a VPC**
+1. **Go to AWS Console → VPC**.  
+2. Click **Create VPC** → Choose **VPC Only**.  
+3. **Set VPC Name** (e.g., `MyCustomVPC`).  
+4. **CIDR Block:** `10.0.0.0/16` (default).  
+5. Click **Create VPC**.  
+
+### **Step 2: Create Subnets**
+1. **Go to VPC → Subnets → Create Subnet**.  
+2. Select **Your VPC** (`MyCustomVPC`).  
+3. Create two subnets:  
+   - **Public Subnet** (e.g., `10.0.1.0/24`, Availability Zone A).  
+   - **Private Subnet** (e.g., `10.0.2.0/24`, Availability Zone B).  
+4. Click **Create**.  
+
+### **Step 3: Attach an Internet Gateway**
+1. **Go to VPC → Internet Gateways → Create IGW**.  
+2. Attach it to `MyCustomVPC`.  
+
+✅ Now, your **public subnet** can access the internet!  
+
+---
+
+# **2. Route 53 (Domain Name System - DNS)**
+AWS **Route 53** is a scalable DNS service for managing domain names.
+
+### **Use Cases**
+✔ **Register domain names** (`example.com`).  
+✔ **Route traffic to AWS services** like EC2, S3, and CloudFront.  
+✔ **Health checks & failover routing**.  
+
+---
+
+## **Hands-on: Create a Route 53 Hosted Zone**
+1. **Go to AWS Console → Route 53**.  
+2. Click **Hosted Zones → Create Hosted Zone**.  
+3. Enter your **Domain Name** (e.g., `mywebsite.com`).  
+4. Choose **Public Hosted Zone** → Click **Create**.  
+
+### **Step 2: Add a Record to Point to an EC2 Instance**
+1. Click **Create Record**.  
+2. **Record Type:** `A (IPv4 Address)`.  
+3. **Value:** Enter the **Elastic IP** of your EC2 instance.  
+4. Click **Create Record**.  
+
+✅ Now, `mywebsite.com` will point to your EC2 instance!  
+
+---
+
+# **3. CloudFront (CDN - Content Delivery Network)**
+AWS **CloudFront** speeds up content delivery by caching it globally.
+
+### **Use Cases**
+✔ **Accelerate website performance**.  
+✔ **Reduce latency for users worldwide**.  
+✔ **Secure content with HTTPS and signed URLs**.  
+
+---
+
+## **Hands-on: Set Up CloudFront for an S3 Website**
+1. **Go to AWS Console → CloudFront**.  
+2. Click **Create Distribution**.  
+3. **Origin Domain:** Select your **S3 bucket (static website hosting enabled)**.  
+4. **Enable HTTP to HTTPS redirection**.  
+5. Click **Create Distribution**.  
+
+✅ Now, CloudFront will serve your S3 website with lower latency!  
+
+---
+
+# **Next Steps**
+Would you like to:  
+✅ **Try setting up a Load Balancer (ALB/ELB)?**  
+✅ **Explore AWS security for VPC (Security Groups, NACLs, VPN)?**  
+✅ **Move to AWS Compute (Lambda, EC2 Auto Scaling)?**  
+
+Let me know how you'd like to proceed!
