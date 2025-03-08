@@ -1,0 +1,173 @@
+# **Amazon CloudFront – Deep Dive**  
+
+Amazon **CloudFront** is a **Content Delivery Network (CDN)** that securely delivers data, videos, applications, and APIs to users with **low latency and high transfer speeds**.  
+
+It uses **Edge Locations** to **cache** content **closer to users**, reducing the load on origin servers and improving website/app performance.
+
+---
+
+## **1️⃣ How CloudFront Works?**  
+1️⃣ **User Requests Content**  
+   - A user requests an **image, video, or webpage** from `www.example.com`.  
+2️⃣ **CloudFront Checks the Edge Cache**  
+   - If the content is cached at a nearby **Edge Location**, it is served immediately (Fast & Low Latency).  
+3️⃣ **If Not Cached, CloudFront Fetches from Origin**  
+   - If the requested content is **not in cache**, CloudFront retrieves it from the **Origin Server** (e.g., **S3, EC2, ALB**).  
+4️⃣ **CloudFront Caches the Content**  
+   - The fetched content is cached at the Edge Location for future requests.  
+
+📌 **Example:**  
+- A user in **India** requests an image from `example.com`.  
+- CloudFront **checks the nearest Edge Location** (e.g., Mumbai).  
+- If the image is **cached**, it is delivered instantly.  
+- If not, it is fetched from **S3 in us-east-1**, then cached in Mumbai for the next request.  
+
+---
+
+## **2️⃣ Benefits of CloudFront**  
+✅ **Low Latency** – Serves content from the nearest Edge Location.  
+✅ **High Speed** – Reduces load on the origin by caching content.  
+✅ **Global Coverage** – 600+ Edge Locations worldwide.  
+✅ **Security** – Integration with AWS Shield, WAF, and signed URLs.  
+✅ **Cost-Effective** – Reduces data transfer costs by caching content.  
+
+---
+
+## **3️⃣ Key Components of CloudFront**  
+
+| Component | Description |
+|-----------|------------|
+| **Edge Locations** | Data centers where CloudFront caches content |
+| **Regional Edge Caches** | Additional caching layers before reaching origin |
+| **Origin Server** | The source of content (e.g., S3, EC2, ALB, API Gateway) |
+| **Distribution** | A CloudFront setup that routes user requests |
+| **Cache Behavior** | Rules to control caching, compression, and request forwarding |
+| **TTL (Time to Live)** | Defines how long content stays in cache before updating |
+
+---
+
+## **4️⃣ CloudFront Distributions**  
+
+CloudFront **Distributions** define how content is served.
+
+| Type | Purpose |
+|------|---------|
+| **Web Distribution** | Delivers **web content (HTML, CSS, JS, images, videos)** |
+| **RTMP Distribution** (Deprecated) | Previously used for **media streaming** (now use Web Distribution + Media Services) |
+
+📌 **Example:**  
+- You want to deliver a website’s images faster.  
+- You create a **Web Distribution** pointing to an **S3 bucket**.  
+- CloudFront **caches the images** at Edge Locations worldwide.  
+
+---
+
+## **5️⃣ Supported Origins**  
+CloudFront fetches content from various **origin servers**:
+
+| Origin | Example Use Case |
+|--------|------------------|
+| **Amazon S3** | Static website hosting, media storage |
+| **EC2 Instances** | Dynamic content like API responses |
+| **Elastic Load Balancer (ALB/NLB)** | Distribute requests across multiple servers |
+| **API Gateway** | Securely serve APIs with caching |
+| **On-Premise Servers** | Extend CloudFront to your own data center |
+
+---
+
+## **6️⃣ Caching in CloudFront**  
+
+CloudFront **caches content** at Edge Locations based on rules:  
+
+| Feature | Description |
+|---------|------------|
+| **TTL (Time-to-Live)** | Controls cache expiration time |
+| **Cache Invalidation** | Clears cached objects manually |
+| **Query String Forwarding** | Determines if query parameters affect cache behavior |
+| **Origin Shield** | Extra layer of caching between Edge Locations & Origin |
+
+### **📌 Example – Cache Settings**
+- **Static Content (Images, CSS, JS)**  
+  - Set **TTL = 24 hours** (long cache).  
+- **Dynamic Content (API Responses, HTML)**  
+  - Set **TTL = 0 seconds** (no caching).  
+
+---
+
+## **7️⃣ CloudFront Security Features**  
+
+| Feature | Purpose |
+|---------|---------|
+| **AWS WAF** | Protects against web attacks (SQL injection, XSS) |
+| **AWS Shield** | Defends against DDoS attacks |
+| **Signed URLs & Signed Cookies** | Restricts access to premium content |
+| **Origin Access Control (OAC)** | Secures S3 content to be accessed only via CloudFront |
+| **Field-Level Encryption** | Protects sensitive data (e.g., credit card numbers) |
+
+📌 **Example: Restrict S3 Access Using CloudFront**  
+- Instead of making an **S3 bucket public**, use CloudFront with **Origin Access Control (OAC)**.  
+- Now, only **CloudFront can fetch S3 content**, preventing direct access.
+
+---
+
+## **8️⃣ CloudFront Routing Policies**  
+
+| Routing Feature | Description |
+|----------------|------------|
+| **Geo Restriction** | Blocks content access from specific countries |
+| **Lambda@Edge** | Runs serverless functions at Edge Locations |
+| **Custom Headers** | Adds security/authentication headers |
+| **Compression (Gzip, Brotli)** | Reduces content size for faster delivery |
+
+📌 **Example: Geo Restriction**  
+- A video streaming website should only be available in **India & US**.  
+- Set up **Geo Restriction** to block users from other countries.  
+
+---
+
+## **9️⃣ Hands-On: Setting Up CloudFront for an S3 Website**  
+
+### **Step 1: Create an S3 Bucket**
+1️⃣ Create a **public S3 bucket** (or use **OAC** for security).  
+2️⃣ Upload an `index.html` file.  
+
+### **Step 2: Create a CloudFront Distribution**
+1️⃣ Go to **CloudFront → Create Distribution**.  
+2️⃣ Set **Origin** as your S3 bucket.  
+3️⃣ Enable **OAC** (if using private S3).  
+4️⃣ Set **TTL = 86400** (1 day caching).  
+5️⃣ Click **Create**.  
+
+### **Step 3: Test CloudFront URL**
+- Find the **CloudFront URL** (e.g., `https://d123abc.cloudfront.net`).  
+- Open it in a browser – your **S3 website is now served globally via CloudFront!**  
+
+---
+
+## **🔟 CloudFront Pricing**  
+
+CloudFront follows **pay-as-you-go pricing**, based on:  
+
+| Pricing Factor | Cost Impact |
+|---------------|------------|
+| **Data Transfer** | Charged per GB served from Edge Locations |
+| **Requests** | Number of HTTP/S requests |
+| **Invalidations** | Clearing cache costs extra if exceeding free limit |
+| **Lambda@Edge** | Extra cost for serverless functions at the edge |
+
+📌 **Cost Optimization Tips**  
+✅ **Use AWS Free Tier** (50GB data transfer free).  
+✅ **Set longer TTL for static content** (reduces origin fetches).  
+✅ **Enable Origin Shield** (reduces direct origin hits).  
+
+---
+
+## **🔹 Summary**  
+
+✅ **CloudFront** is a **CDN that caches content at Edge Locations worldwide**.  
+✅ It reduces **latency, improves performance, and secures content**.  
+✅ **Supports S3, EC2, ALB, API Gateway, and on-premise origins**.  
+✅ **Uses caching, compression, and security features (OAC, WAF, Signed URLs, Geo Restriction)**.  
+✅ **Integrates with AWS services like S3, EC2, ALB, and Lambda@Edge**.  
+
+🚀 **Next Steps:** Would you like a **hands-on lab** for integrating CloudFront with a real-world website or API? 💡
